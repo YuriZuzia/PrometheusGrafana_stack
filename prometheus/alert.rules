@@ -1,0 +1,35 @@
+groups: 
+- name: example
+  rules:
+  - alert: PrometheusTargetMissing
+    expr: up == 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Prometheus target missing (instance {{ $labels.instance }})"
+      description: "A Prometheus target has disappeared. An exporter might be crashed. VALUE = {{ $value }}  LABELS: {{ $labels }}"
+  
+  - alert: Skillfactory_status_code_changed
+    expr: probe_http_status_code{instance="https://skillfactory.ru", job="blackbox"} == 200
+    for: 0m
+    labels:
+      severity: page
+    annotations:
+      summary: "Please checkout Skillfactory server status"
+
+  - alert: Skillfactory_latency_too_high
+    expr: (probe_http_duration_seconds{instance="https://skillfactory.ru"}) > 5000
+    for: 0m
+    labels:
+      severity: page
+    annotations:
+      summary: "Skillfactory latency too high"
+
+  - alert: Skillfactory_server_restarted
+    expr: (sum(time() - node_boot_time_seconds{instance="blackbox-exporter:9115"})) == 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Skillfactory server was restarted" 
